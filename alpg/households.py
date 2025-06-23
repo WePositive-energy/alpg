@@ -16,14 +16,15 @@
 
     
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
+from alpg.configLoader import config
 
-import math, copy
-import profilegentools
-import persons
-import devices
-import heatdemand
+import math
+import copy
+from alpg import profilegentools
+from alpg import persons
+from alpg import devices
+from alpg import heatdemand
+import random
 
 
 class Household:

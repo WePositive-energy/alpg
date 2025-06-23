@@ -23,9 +23,8 @@
 # based on the flexibility, the modelled zone, and the heating device, (optimizing) controllers can be implemented in the external too
 # such as DEMKit to simulate the temperature behaviour of the zone based on the control actions.
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
-
+from alpg.configLoader import config
+import random
 
 # HeatDevice is the overall class for these devices
 class HeatDevice:

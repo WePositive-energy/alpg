@@ -15,11 +15,12 @@
     #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
-import math, datetime
-import profilegentools
+from alpg.configLoader import config
+import math
+import datetime
+from alpg import profilegentools
 import linecache
+import random
 
 class Device:
 	def __init__(self, consumption = 0):

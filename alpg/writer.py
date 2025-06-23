@@ -16,11 +16,10 @@
 
 
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
+from alpg.configLoader import outputFolder
 
 import os
-import profilegentools
+from alpg import profilegentools
 
 def writeCsvLine(fname, hnum, line):
 	if not os.path.exists(outputFolder+'/'+fname): 

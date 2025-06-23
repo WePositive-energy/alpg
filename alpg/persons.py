@@ -16,9 +16,9 @@
 
     
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
-import profilegentools
+import random
+from alpg.configLoader import config
+from alpg import profilegentools
 
 class Person:		
 	def __init__(self, age):

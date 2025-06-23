@@ -16,10 +16,9 @@
 
 
 
-from configLoader import *
-config = importlib.import_module(cfgFile)
-
-import profilegentools
+from alpg.configLoader import config
+from alpg import profilegentools
+import random
 		
 class House:
 	#In the end we need to define houses as well with their orientation
