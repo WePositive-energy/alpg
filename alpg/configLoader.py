@@ -15,26 +15,7 @@
 
 
 from importlib.machinery import SourceFileLoader
-import sys
-import getopt
-
-# Default write into a new folder
-folder = "output/output/"
-
-cfgOutputDir = "output/output/"
-outputFolder = cfgOutputDir
-cfgFile = None
-
-# Parse arguments
-opts, args = getopt.getopt(sys.argv[1:], "c:o:f", ["config=", "output=", "force"])
-for opt, arg in opts:
-    if opt in ("-c", "--config"):
-        cfgFile = arg
-    elif opt in ("-o", "--output"):
-        cfgOutputDir = "output/" + arg + "/"
-
-outputFolder = cfgOutputDir
-sys.path.insert(0, "configs")
+from pathlib import Path
 
 
 class ConfigLoader:
@@ -47,8 +28,9 @@ class ConfigLoader:
     def __init__(self):
         self.configModule = None
 
-    def load_config(self, cfgFile):
-        self.configModule = SourceFileLoader("config", cfgFile).load_module()
+    def load_config(self, cfgFile: Path, outputFolder: Path):
+        self.configModule = SourceFileLoader("config", str(cfgFile)).load_module()
+        self.configModule.outputFolder = str(outputFolder)
 
     def __getattr__(self, attr):
         return getattr(self.configModule, attr)

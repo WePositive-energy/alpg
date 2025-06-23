@@ -18,87 +18,90 @@
 
 # from configLoader import *
 # config = importlib.import_module(cfgFile)
-import os
-import sys
-import getopt
 import random
-
-from alpg import neighbourhood
+import typer
+from typing import Annotated
+from pathlib import Path
 from alpg.configLoader import config
 
+from alpg import neighbourhood
+from alpg.writer import OUTPUT_FILES
 
-def main():
+app = typer.Typer()
+
+
+@app.command()
+def main(
+    cfgFile: Annotated[
+        Path,
+        typer.Option(
+            "-c",
+            "--config",
+            help="",
+            file_okay=True,
+            dir_okay=False,
+            readable=True,
+            exists=True,
+        ),
+    ],
+    output_name: Annotated[
+        str,
+        typer.Option(
+            "-o",
+            "--output",
+            help="The subfolder in --output-folder to save the data in.",
+        ),
+    ] = "output",
+    output_folder: Annotated[
+        Path,
+        typer.Option(
+            help="The output directory to write to. Must be empty unless --force is specified.",
+            file_okay=False,
+            dir_okay=True,
+            exists=True,
+        ),
+    ] = "output",
+    force: Annotated[
+        bool,
+        typer.Option(
+            "--force", "-f", help="Overwrite any files in the --output directory."
+        ),
+    ] = False,
+):
     print("Profilegenerator 2.0\n", flush=True)
-    print("Copyright (C) 2025 University of Twente", flush=True)
+    print("Copyright (C) 2025 University of Twente+WePositive.energy", flush=True)
     print("This program comes with ABSOLUTELY NO WARRANTY.", flush=True)
     print(
         "This is free software, and you are welcome to redistribute it under certain conditions.",
         flush=True,
     )
     print("See the acompanying license for more information.\n", flush=True)
+    outputFolder = output_folder / output_name
 
-    if len(sys.argv) > 1:
-        # Get arguments:
-        try:
-            opts, args = getopt.getopt(
-                sys.argv[1:], "c:o:f", ["config=", "output=", "force"]
-            )
-        except getopt.GetoptError:
-            print("Usage:", flush=True)
+    if not outputFolder.exists():
+        outputFolder.mkdir()
+    if len(list(outputFolder.iterdir())) != 0:
+        if not force:
             print(
-                "profilegenerator.py -c <config> [-o <output subfolder> -f]", flush=True
+                "Config directory is not empty! Provide the --force flag to delete the contents",
+                flush=True,
             )
-            sys.exit(2)
+            exit()
+        for file in outputFolder.iterdir():
+            if file.name in OUTPUT_FILES:
+                file.unlink()
 
-        # Default write into a new folder
-        cfgOutputDir = "output/output/"
-        forceDeletion = False
-
-        # Parse arguments
-        for opt, arg in opts:
-            if opt in ("-c", "--config"):
-                cfgFile = arg
-            elif opt in ("-o", "--output"):
-                cfgOutputDir = "output/" + arg + "/"
-            elif opt in ("-f", "--force"):
-                forceDeletion = True
-
-        # Check if the output dir exists, otherwise make it
-        os.makedirs(os.path.dirname(cfgOutputDir), exist_ok=True)
-
-        if os.listdir(cfgOutputDir):
-            # Empty the directory
-            if forceDeletion:
-                for tf in os.listdir(cfgOutputDir):
-                    fp = os.path.join(cfgOutputDir, tf)
-                    try:
-                        if os.path.isfile(fp):
-                            os.unlink(fp)
-                    except Exception as e:
-                        print(e, flush=True)
-            else:
-                print(
-                    "Config directory is not empty! Provide the --force flag to delete the contents",
-                    flush=True,
-                )
-                exit()
-
-    else:
-        print("Usage:", flush=True)
-        print("profilegenerator.py -c <config> [-o <output subfolder> -f]", flush=True)
-        exit()
-
-    config.load_config(cfgFile)
+    config.load_config(cfgFile=cfgFile, outputFolder=outputFolder)
     config.generate_households()
 
-    print("Loading config: " + cfgFile, flush=True)
+    print("Loading config: " + str(cfgFile), flush=True)
     print(
         "The current config will create and simulate "
         + str(len(config.householdList))
         + " households",
         flush=True,
     )
-    print("Results will be written into: " + cfgOutputDir + "\n", flush=True)
+    print("Results will be written into: " + str(outputFolder) + "\n", flush=True)
     print("NOTE: Simulation may take a (long) while...\n", flush=True)
 
     # Check the config:
@@ -149,3 +152,7 @@ def main():
         del householdList[0]
 
         hnum = hnum + 1
+
+
+if __name__ == "__main__":
+    app()
