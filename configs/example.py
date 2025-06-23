@@ -22,15 +22,17 @@
 from astral import Location
 from alpg import writer as writer
 from alpg import households
+import alpg
 from pathlib import Path
 
-input_dir = Path(__file__).parent.parent / "input"
+alpg_dir = Path(alpg.__file__).parent
+input_dir = alpg_dir / "input"
 
 # Random seed
 seed = 42
 
 # input files:
-weather_irradiation = input_dir / "weather/solarirradiation_twenthe.csv"
+weather_irradiation = str(input_dir / "weather/solarirradiation_twenthe.csv")
 weather_timebaseDataset = 3600  # in seconds per interval
 
 # Simulation:
